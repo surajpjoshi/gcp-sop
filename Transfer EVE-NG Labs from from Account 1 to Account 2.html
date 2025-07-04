@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>EVE-NG Backup and Restore SOP</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f9f9f9;
+      color: #333;
+      line-height: 1.6;
+    }
+    h1, h2, h3 {
+      color: #0a5dab;
+    }
+    code {
+      background-color: #efefef;
+      padding: 3px 5px;
+      border-radius: 4px;
+      font-family: Consolas, monospace;
+    }
+    pre {
+      background: #2d2d2d;
+      color: #00e676;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    .note {
+      background-color: #fff9c4;
+      border-left: 4px solid #fbc02d;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #999;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #e3f2fd;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🔁 SOP: Backup and Transfer EVE-NG Labs/VMs from Account 1 to Account 2</h1>
+
+  <h2>🧾 Overview</h2>
+  <ul>
+    <li><strong>Source Instance:</strong> Account 1 (EVE-NG VM in GCP)</li>
+    <li><strong>Target Instance:</strong> Account 2 (Another EVE-NG VM)</li>
+    <li><strong>Transfer Method:</strong> HTTP via Python + <code>wget</code></li>
+    <li><strong>Backup File:</strong> <code>eveng_backup.tar.gz</code></li>
+  </ul>
+
+  <h2>🖥️ ACCOUNT 1 – BACKUP AND HOST FILE</h2>
+
+  <h3>🔹 Step 1: Create Backup Archive</h3>
+  <pre>sudo -i
+cd /root
+sudo tar czvf eveng_backup.tar.gz /opt/unetlab/labs/ /opt/unetlab/addons/qemu/</pre>
+
+  <div class="note">
+    This creates a <code>.tar.gz</code> file that includes labs and QEMU VMs.
+  </div>
+
+  <h3>🔹 Step 2: Serve the File Using Python HTTP Server</h3>
+  <pre>cd /root
+python3 -m http.server 9090</pre>
+
+  <p><strong>URL to Download:</strong> <br>
+  <code>http://&lt;External-IP-of-Account1&gt;:9090/eveng_backup.tar.gz</code></p>
+
+  <h3>🔹 Step 3: Open GCP Firewall (If Needed)</h3>
+  <ol>
+    <li>Go to <strong>VPC Network > Firewall rules</strong></li>
+    <li>Create new rule with:
+      <ul>
+        <li><strong>Name:</strong> allow-http-transfer</li>
+        <li><strong>Targets:</strong> All instances</li>
+        <li><strong>Source IP ranges:</strong> 0.0.0.0/0</li>
+        <li><strong>Protocols and ports:</strong> tcp:9090</li>
+      </ul>
+    </li>
+  </ol>
+
+  <h2>🖥️ ACCOUNT 2 – DOWNLOAD AND RESTORE</h2>
+
+  <h3>🔹 Step 4: Download Backup File from Account 1</h3>
+  <pre>sudo -i
+cd /root
+wget "http://&lt;Account1-External-IP&gt;:9090/eveng_backup.tar.gz" -O eveng_backup.tar.gz</pre>
+
+  <h3>🔹 Step 5: Extract the Backup File</h3>
+  <pre>sudo tar xzvf eveng_backup.tar.gz -C /</pre>
+
+  <h3>🔹 Step 6: Fix Permissions (EVE-NG Required)</h3>
+  <pre>/opt/unetlab/wrappers/unl_wrapper -a fixpermissions</pre>
+
+  <h3>🔹 Step 7: Restart EVE-NG Services</h3>
+  <pre>reboot</pre>
+  <p><strong>Or use:</strong></p>
+  <pre>systemctl restart unetlab</pre>
+
+  <h2>✅ Final Verification</h2>
+  <ul>
+    <li>Access EVE-NG GUI via browser</li>
+    <li>Verify all labs are visible</li>
+    <li>Ensure VMs boot correctly</li>
+  </ul>
+
+  <h2>🧹 Optional: Clean Up</h2>
+
+  <h3>🔸 On Account 1:</h3>
+  <pre>rm /root/eveng_backup.tar.gz</pre>
+
+  <h3>🔸 On Account 2 (after extraction):</h3>
+  <pre>rm /root/eveng_backup.tar.gz</pre>
+
+  <h2>📋 Summary</h2>
+  <table>
+    <tr>
+      <th>Step</th>
+      <th>Description</th>
+    </tr>
+    <tr>
+      <td>Backup with <code>tar</code></td>
+      <td>On Account 1 – includes labs & QEMU VMs</td>
+    </tr>
+    <tr>
+      <td>Serve with Python HTTP</td>
+      <td>On Account 1 – make file downloadable</td>
+    </tr>
+    <tr>
+      <td>Download with <code>wget</code></td>
+      <td>On Account 2 – fetch the backup</td>
+    </tr>
+    <tr>
+      <td>Extract archive</td>
+      <td>On Account 2 – restore files to correct paths</td>
+    </tr>
+    <tr>
+      <td>Fix permissions</td>
+      <td>Ensures EVE-NG sees everything properly</td>
+    </tr>
+    <tr>
+      <td>Restart or reboot</td>
+      <td>Apply changes and reload GUI</td>
+    </tr>
+  </table>
+
+</body>
+</html>

@@ -1,0 +1,27 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SOP: Download and Deploy `.qcow2` Image in EVE-NG QEMU Folder</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+        h1 { color: #2c3e50; }
+        h2 { color: #34495e; margin-top: 20px; }
+        pre { background-color: #f4f4f4; padding: 10px; border-left: 3px solid #3498db; overflow-x: auto; color: #2d3436; }
+        code { color: #d63384; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>SOP: Download and Deploy `.qcow2` Image in EVE-NG QEMU Folder</h1>
+<h2>Purpose</h2>
+<pre>To download a `.qcow2` image directly into EVE-NG and prepare it for use in virtual labs.</pre>
+<h2>Prerequisites</h2>
+<pre>- EVE-NG is installed and running on your Linux VM.<br>- You have root or sudo access.<br>- Internet access from EVE-NG VM.</pre>
+<h2>Steps</h2>
+<pre>Step 1: SSH into your EVE-NG machine<br><code>ssh root@&lt;eve-ng-ip&gt;</code><br><code># OR if on GCP:</code><br><code>gcloud compute ssh eveng --zone=us-central1-f</code><br><br>Step 2: Navigate to the QEMU folder<br><code>cd /opt/unetlab/addons/qemu/</code><br><br>Step 3: Create a new directory for the image<br><code>mkdir win10-vl19</code><br><code>cd win10-vl19</code><br><br>Step 4: Download the `.qcow2` image using `wget`<br><code>wget &quot;https://drive.labhub.eu.org/0:/addons/qemu/win-10-x64-VL19/virtioa.qcow2&quot; -O virtioa.qcow2</code><br><br><code># If SSL issues occur, use:</code><br><code>wget --no-check-certificate &quot;https://drive.labhub.eu.org/0:/addons/qemu/win-10-x64-VL19/virtioa.qcow2&quot; -O virtioa.qcow2</code><br><br>Step 5: Rename the downloaded file (if required)<br><code>mv virtioa.qcow2 hda.qcow2</code><br><br>Step 6: Fix EVE-NG permissions<br><code>/opt/unetlab/wrappers/unl_wrapper -a fixpermissions</code></pre>
+<h2>Outcome</h2>
+<pre>The image is downloaded to the correct folder and is ready to be used in EVE-NG topology.</pre>
+<h2>Example Folder Structure</h2>
+<pre><br><code>/opt/unetlab/addons/qemu/win10-vl19/</code><br> └── hda.qcow2<br></pre>
+</body></html>

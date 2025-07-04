@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GCP CLI SOP - Authenticate & Start VM</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #f9f9f9;
+      color: #333;
+      line-height: 1.6;
+    }
+    h1, h2, h3 {
+      color: #2c3e50;
+    }
+    code {
+      background-color: #eef;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    pre {
+      background-color: #eef;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+    table, th, td {
+      border: 1px solid #aaa;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    .section {
+      background: #fff;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-left: 5px solid #2c3e50;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Standard Operating Procedure (SOP)</h1>
+  <h2>Authenticate & Start a GCP VM Instance via Google Cloud CLI</h2>
+
+  <div class="section">
+    <h3>Objective</h3>
+    <p>To log in to Google Cloud CLI, set the correct project, and start a virtual machine (VM) instance.</p>
+  </div>
+
+  <div class="section">
+    <h3>Pre-requisites</h3>
+    <ul>
+      <li>Google Cloud CLI installed</li>
+      <li>Internet connectivity</li>
+      <li>Permissions to access and start GCP VM</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h3>Procedure</h3>
+
+    <h4>Step 1: Open Google Cloud CLI</h4>
+    <pre>C:\Users\&lt;username&gt;\AppData\Local\Google\Cloud SDK&gt;</pre>
+
+    <h4>Step 2: Authenticate to Google Cloud</h4>
+    <pre>gcloud auth login</pre>
+    <p>This opens a browser. Log in with your Google account.</p>
+
+    <h4>Step 3: List Available Projects</h4>
+    <pre>gcloud projects list</pre>
+    <table>
+      <tr>
+        <th>PROJECT_ID</th>
+        <th>NAME</th>
+        <th>PROJECT_NUMBER</th>
+      </tr>
+      <tr>
+        <td>evevg-464605</td>
+        <td>evevg</td>
+        <td>239527817814</td>
+      </tr>
+      <tr>
+        <td>fiery-chess-464605-d1</td>
+        <td>My First Project</td>
+        <td>919329399059</td>
+      </tr>
+      <tr>
+        <td>test-464817</td>
+        <td>test</td>
+        <td>895226267251</td>
+      </tr>
+    </table>
+
+    <h4>Step 4: Set Active Project</h4>
+    <pre>gcloud config set project test-464817</pre>
+
+    <h4>Step 5: List VM Instances</h4>
+    <pre>gcloud compute instances list</pre>
+
+    <h4>Step 6: Start the VM</h4>
+    <pre>gcloud compute instances start eveng --zone=us-central1-f</pre>
+
+    <h4>Step 7: Confirm VM is Running</h4>
+    <pre>gcloud compute instances list</pre>
+  </div>
+
+  <div class="section">
+    <h3>Troubleshooting</h3>
+    <table>
+      <tr>
+        <th>Issue</th>
+        <th>Resolution</th>
+      </tr>
+      <tr>
+        <td>Permission Error</td>
+        <td>Check IAM roles and project selection</td>
+      </tr>
+      <tr>
+        <td>Command Not Found</td>
+        <td>Use <code>gcloud</code> prefix for all commands</td>
+      </tr>
+      <tr>
+        <td>No External IP</td>
+        <td>Assign static or ephemeral IP to the VM</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h3>References</h3>
+    <ul>
+      <li><a href="https://cloud.google.com/sdk/docs" target="_blank">GCloud CLI Documentation</a></li>
+      <li><a href="https://cloud.google.com/compute/docs/access/iam" target="_blank">Compute Engine IAM Permissions</a></li>
+    </ul>
+  </div>
+
+</body>
+</html>
