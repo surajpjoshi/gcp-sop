@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GCP VM Cloning SOP</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      line-height: 1.6;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    h1, h2, h3 {
+      color: #004d99;
+    }
+    code {
+      background-color: #f2f2f2;
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+    a {
+      color: #007acc;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .video {
+      margin: 20px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Standard Operating Procedure (SOP): Cloning a VM from One GCP Account to Another</h1>
+
+  <h2>Objective:</h2>
+  <p>To clone a Virtual Machine (VM) running EVE-NG from Account A to Account B in Google Cloud Platform (GCP).</p>
+
+  <h2>Prerequisites:</h2>
+  <ul>
+    <li>Access to both GCP accounts:
+      <ul>
+        <li><strong>Account A (Source)</strong>: devops.surajpjoshi@gmail.com</li>
+        <li><strong>Account B (Destination)</strong>: surpjoshi1@gmail.com</li>
+      </ul>
+    </li>
+    <li>IAM permissions: Editor or custom roles with Compute Engine permissions.</li>
+    <li>VM should be in <strong>stopped</strong> state before creating an image.</li>
+  </ul>
+
+  <h2>Step-by-Step Procedure:</h2>
+
+  <h3>1. Stop the Source VM (Account A)</h3>
+  <p>Go to <strong>Compute Engine &gt; VM instances</strong>.<br>
+     Locate the VM you want to clone and <strong>stop</strong> it to ensure data consistency.</p>
+
+  <h3>2. Create an Image from the Source VM</h3>
+  <ul>
+    <li>Navigate to <strong>Compute Engine &gt; Disks</strong>.</li>
+    <li>Click on the <strong>boot disk</strong> of the stopped VM.</li>
+    <li>Click on <strong>Create Image</strong>.</li>
+    <li>Provide a name (e.g., <code>eveng-sur1</code>).</li>
+    <li>Leave the default settings and click <strong>Create</strong>.</li>
+  </ul>
+
+  <h3>3. Share the Image with Destination Account (Account B)</h3>
+  <ul>
+    <li>Go to <strong>Compute Engine &gt; Images</strong>.</li>
+    <li>Select the image you just created.</li>
+    <li>Click on <strong>Permissions &gt; Add Principal</strong>.</li>
+    <li>Enter destination account email: <code>surpjoshi1@gmail.com</code></li>
+    <li>Assign roles:
+      <ul>
+        <li>Compute Image User</li>
+        <li>Compute Instance Admin (beta)</li>
+        <li>Compute Editor</li>
+      </ul>
+    </li>
+    <li>Click <strong>Save</strong>.</li>
+  </ul>
+
+  <h3>4. Grant IAM Role Access</h3>
+  <ul>
+    <li>Navigate to <strong>IAM & Admin &gt; IAM</strong>.</li>
+    <li>Click <strong>Grant Access</strong>.</li>
+    <li>Add the destination user: <code>surpjoshi1@gmail.com</code></li>
+    <li>Assign roles:
+      <ul>
+        <li>Compute Image User</li>
+        <li>Compute Instance Admin (beta)</li>
+      </ul>
+    </li>
+    <li>Click <strong>Save</strong>.</li>
+  </ul>
+
+  <h3>5. Create VM in Account B from Shared Image</h3>
+  <ul>
+    <li>Login to <strong>Account B</strong>.</li>
+    <li>Go to <strong>Compute Engine &gt; VM instances &gt; Create Instance</strong>.</li>
+    <li>Name the instance (e.g., <code>eveng-clone</code>).</li>
+    <li>Select machine type: <code>N2 &gt; n2-standard-16</code>.</li>
+    <li>Under <strong>Boot Disk</strong>, select <strong>Custom Image</strong>.</li>
+    <li>Select the shared image from Account A and set disk size (e.g., 250 GB SSD).</li>
+    <li>Allow HTTP traffic and click <strong>Create</strong>.</li>
+  </ul>
+
+  <h3>6. Verify the VM Creation</h3>
+  <p>Wait 5–10 minutes for provisioning.<br>
+     Confirm external/internal IPs are assigned.<br>
+     Open browser, access external IP.<br>
+     Login to EVE-NG with:</p>
+  <ul>
+    <li>Username: <code>admin</code></li>
+    <li>Password: <code>eve</code></li>
+  </ul>
+
+  <h3>7. Create Firewall Rules (If Needed)</h3>
+  <p>Go to <strong>VPC Network &gt; Firewall Rules</strong>:</p>
+
+  <p><strong>Create Ingress Rule:</strong></p>
+  <ul>
+    <li>Name: <code>allow-ingress</code></li>
+    <li>Target: All instances</li>
+    <li>Source: <code>0.0.0.0/0</code></li>
+    <li>Protocols: All TCP ports</li>
+  </ul>
+
+  <p><strong>Create Egress Rule:</strong></p>
+  <ul>
+    <li>Name: <code>allow-egress</code></li>
+    <li>Destination: <code>0.0.0.0/0</code></li>
+    <li>Protocols: All TCP ports</li>
+  </ul>
+
+  <h3>8. Verify Full Setup</h3>
+  <ul>
+    <li>Open devices inside EVE-NG (switches, PCs, servers).</li>
+    <li>Wait 10–15 minutes for full boot.</li>
+    <li>Ping internal IPs (e.g., <code>192.168.100.230</code>) to verify full clone & config replication.</li>
+  </ul>
+
+  <h2>🎥 Reference Video:</h2>
+  <div class="video">
+    <a href="https://www.youtube.com/watch?v=D8Ur2OZXmzs&t=11s" target="_blank">
+      Watch Step-by-Step Tutorial on YouTube
+    </a>
+  </div>
+
+  <h2>✅ Conclusion:</h2>
+  <p>You have successfully cloned the EVE-NG VM from one GCP account to another with full configuration and connectivity.</p>
+
+</body>
+</html>
