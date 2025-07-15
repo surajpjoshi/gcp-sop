@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SOP: Expand Root Partition on GCP Ubuntu Instance</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        pre {
+            background-color: #eee;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Standard Operating Procedure (SOP)</h1>
+<h2>Expand Root Partition on Google Cloud Ubuntu Instance</h2>
+
+<h2>Why This Happens</h2>
+<p>
+When you allocate a larger boot disk (e.g., 500GB) on Google Cloud, the OS image often defaults to a smaller partition (e.g., 243GB). GCP only resizes the virtual disk, not the internal OS partition or filesystem.
+</p>
+
+<h2>Objective</h2>
+<p>
+Expand the root filesystem to utilize the full disk space allocated on Google Cloud Platform.
+</p>
+
+<h2>Step-by-Step Guide</h2>
+
+<h3>1. Check Disk Layout</h3>
+<pre><code>lsblk</code></pre>
+<p>Expected Output Example:</p>
+<pre><code>NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda      8:0    0  500G  0 disk
+└─sda1   8:1    0  243G  0 part /</code></pre>
+
+<h3>2. Verify Unallocated Space</h3>
+<pre><code>sudo fdisk -l</code></pre>
+<p>Look for free space after <code>/dev/sda1</code>, e.g., ~257GB unallocated.</p>
+
+<h3>3. Install Growpart Utility</h3>
+<pre><code>sudo apt update && sudo apt install cloud-guest-utils -y</code></pre>
+
+<h3>4. Resize the Root Partition</h3>
+<pre><code>sudo growpart /dev/sda 1</code></pre>
+<p>This extends the partition to fill the entire disk.</p>
+
+<h3>5. Expand Filesystem</h3>
+<p>For <strong>ext4 filesystem</strong> (common on Ubuntu):</p>
+<pre><code>sudo resize2fs /dev/sda1</code></pre>
+<p>For <strong>XFS filesystem</strong> (common on CentOS/RHEL):</p>
+<pre><code>sudo xfs_growfs /</code></pre>
+
+<h3>6. Verify Final Disk Size</h3>
+<pre><code>df -h</code></pre>
+<p>You should now see close to 500G total size for <code>/</code>.</p>
+
+<h2>Summary</h2>
+<ul>
+    <li>✅ GCP disk expanded</li>
+    <li>✅ Linux partition & filesystem resized</li>
+    <li>✅ Full disk capacity now visible</li>
+</ul>
+
+<h2>Optional</h2>
+<p>You can paste the <code>lsblk</code> and <code>fdisk -l</code> outputs to your support channel for tailored guidance.</p>
+
+</body>
+</html>
